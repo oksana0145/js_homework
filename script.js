@@ -1,1 +1,1 @@
-
+import "./js_homework/homework1.js"
