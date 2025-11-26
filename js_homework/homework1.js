@@ -1,30 +1,73 @@
-let carService ={
-    name: "Dolinskiy mechanic",
-    service: ["oil change", "diagnostics", "brake inspection"],
-    price: [550, 450, 350],
-    "tow truck": {
-        available: true,
-        price: 250,
-    },
-    hours: {
-        open: "09:00",
-        close: "20:00"
-    },
+/* 1. Дописати доступність послуг. Якщо послуга доступна, то нічого не показується, 
+        якщо послуга недоступна, то відображається інформація, що послуга недоступна.
+    2. Виводити графік роботи
+    3. Зробити так, щоб часу можна було вводити лише '22:30' наприклад, а не цілу дату
+    4. Додати getter/setter
+    5. Метод що повертає повний список послуг
+    6. Використати super
+    7. чи можна додати валідацію/перевірку при створенні конструктора? Наприклад services це має бути масив, 
+        у якомі міститься 2 об'єкти, об'єкт мвстить в собі 2 ключі. Ключ 1 "name" - який приймає str, 
+        ключ 2 "price" - який приймає numb (це виконується за допомогою get/set?)
+    8. Метод isServisWork та workingHours об'єднати в 1, прописати elsе, якщо буде введений не коректний формат дати, 
+        то буде відображатись лише години роботи від та до
+    9. setTimeout використати для поточного оновлення часу
 
-    serviceInfo (typeHours) {
-        let iPrice = () => {
-            for (let i = 0; i < this.price.length; i++) {
-                console.log(`Вартість послуги ${this.service[i]}: ${this.price[i]} гривень.`);
-            }
+*/
+class CarService {
+    constructor(name, services, schedule) {
+        this.name = name;
+        this.services = services;
+        this.schedule = schedule;
+        this.closePrice = 2;
+    }
+    
+    isOpen(dateInput) {
+        const date = dateInput ? new Date(dateInput) : new Date();
+
+        const current = date.getHours() * 60 + date.getMinutes();
+        const open = this.schedule.open * 60;
+        const close = this.schedule.close * 60;
+
+        return current >= open && current < close
+    }
+
+    servicePrice (date) {
+        if (this.isOpen(date)) {
+            this.services.forEach (services => {
+            console.log(`Сервіс відчинено! Вартість послуги ${services.name} коштує ${services.price} грн.`)});
+        } else {
+            this.services.forEach ( services => {
+            console.log(`Сервіс зачинено, діє підвищений тариф! Вартість послуги ${services.name} коштує ${services.price * this.closePrice} грн.`)});
+    }}
+
+    workingHours () {
+            console.log(`Сервіс працює від ${this.schedule.open} години до ${this.schedule.close} години.`);
         }
-        if (typeHours === this.hours.open || typeHours === this.hours.close) {
-                console.log (`${this.name} обслуговує ваші автмоблі з ${this.hours.open} по ${this.hours.close}`);
-        } else if (
-            typeHours !== this.hours.open || typeHours !== this.hours.close ) {
-                console.log (`${this.name} зараз зачинено, але за необхідність поза робочий час ${this.price} подвійний тариф.`);
-        } else { 
-            console.log(`У критичних випадках налаємо послуги евакуатора за ${this["tow truck"].price} гривень.`);
-        }
-}
-}
-carService.serviceInfo("10:00");
+
+    isServisWork (date) {
+        if (this.isOpen(date)) {
+            console.log(`Сервіс відчинений! Працюємо до ${this.schedule.close}години`);
+        } else {
+            console.log(`Сервіс не працює! Запрошуємо від ${this.schedule.open} години`);
+        };
+
+    };}
+
+
+const BestService = new CarService (
+    "Best Service", 
+    [
+        {name:"Заміна олії", price: 550,  available: true},
+        {name: "Діагностика", price: 450, available: false},
+        {name: "Перевірка гальм", price: 350, available: true},
+        {name: "Евакуатор", price: 250, available: true}
+    ],
+    {open: 9, close: 20}
+)
+
+BestService.servicePrice();
+BestService.workingHours();
+BestService.isServisWork("2025-11-21T12:30:00");
+
+
+//  "2025-11-21T22:30:00"
